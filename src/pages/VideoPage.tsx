@@ -44,10 +44,11 @@ export default function VideoPage() {
         .update({ views: videoData.views + 1 })
         .eq("id", videoData.id);
 
-      // Fetch suggested videos based on category and tags
+      // Fetch suggested videos based on category and tags (only public videos)
       const { data: suggested } = await supabase
         .from("videos")
         .select("*")
+        .eq("is_public", true)
         .neq("id", videoData.id)
         .or(`category.eq.${videoData.category},tags.cs.{${videoData.tags.join(",")}}`)
         .limit(6);

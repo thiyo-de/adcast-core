@@ -9,6 +9,8 @@ import { useToast } from "@/hooks/use-toast";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Eye, Heart, Trash2, Edit, Plus } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -18,6 +20,7 @@ export default function Admin() {
   const [password, setPassword] = useState("");
   const [videos, setVideos] = useState<any[]>([]);
   const [editingVideo, setEditingVideo] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState("videos");
 
   const [formData, setFormData] = useState({
     title: "",
@@ -27,6 +30,7 @@ export default function Admin() {
     category: "",
     tags: "",
     thumbnail_url: "",
+    is_public: true,
   });
 
   useEffect(() => {
@@ -147,18 +151,20 @@ export default function Admin() {
       toast({ title: "Success", description: "Video created successfully" });
     }
 
-    setFormData({
-      title: "",
-      slug: "",
-      description: "",
-      embed_code: "",
-      category: "",
-      tags: "",
-      thumbnail_url: "",
-    });
-    setEditingVideo(null);
-    fetchVideos();
-  };
+      setFormData({
+        title: "",
+        slug: "",
+        description: "",
+        embed_code: "",
+        category: "",
+        tags: "",
+        thumbnail_url: "",
+        is_public: true,
+      });
+      setEditingVideo(null);
+      fetchVideos();
+      setActiveTab("videos");
+    };
 
   const handleEdit = (video: any) => {
     setEditingVideo(video);
@@ -170,7 +176,9 @@ export default function Admin() {
       category: video.category,
       tags: video.tags.join(", "),
       thumbnail_url: video.thumbnail_url || "",
+      is_public: video.is_public ?? true,
     });
+    setActiveTab("add");
   };
 
   const handleDelete = async (id: string) => {
@@ -237,7 +245,7 @@ export default function Admin() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
-        <Tabs defaultValue="videos" className="space-y-6">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
           <TabsList>
             <TabsTrigger value="videos">Videos</TabsTrigger>
             <TabsTrigger value="add">Add/Edit Video</TabsTrigger>
@@ -252,6 +260,7 @@ export default function Admin() {
                   <TableRow>
                     <TableHead>Title</TableHead>
                     <TableHead>Category</TableHead>
+                    <TableHead>Visibility</TableHead>
                     <TableHead>Views</TableHead>
                     <TableHead>Likes</TableHead>
                     <TableHead>Actions</TableHead>
@@ -262,6 +271,11 @@ export default function Admin() {
                     <TableRow key={video.id}>
                       <TableCell className="font-medium">{video.title}</TableCell>
                       <TableCell>{video.category}</TableCell>
+                      <TableCell>
+                        <Badge variant={video.is_public ? "default" : "secondary"}>
+                          {video.is_public ? "Public" : "Unlisted"}
+                        </Badge>
+                      </TableCell>
                       <TableCell>
                         <span className="flex items-center gap-1">
                           <Eye className="h-4 w-4" />
@@ -372,6 +386,21 @@ export default function Admin() {
                   />
                 </div>
 
+                <div className="flex items-center justify-between p-4 border rounded-lg">
+                  <div className="space-y-0.5">
+                    <label className="text-sm font-medium">Video Visibility</label>
+                    <p className="text-sm text-muted-foreground">
+                      {formData.is_public 
+                        ? "Video is visible on all public pages" 
+                        : "Video is unlisted but accessible via direct link"}
+                    </p>
+                  </div>
+                  <Switch
+                    checked={formData.is_public}
+                    onCheckedChange={(checked) => setFormData({ ...formData, is_public: checked })}
+                  />
+                </div>
+
                 <div className="flex gap-2">
                   <Button type="submit">
                     {editingVideo ? "Update Video" : "Create Video"}
@@ -390,6 +419,7 @@ export default function Admin() {
                           category: "",
                           tags: "",
                           thumbnail_url: "",
+                          is_public: true,
                         });
                       }}
                     >

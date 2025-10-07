@@ -22,6 +22,7 @@ export default function TagPage() {
       .from("videos")
       .select("*")
       .contains("tags", [tag])
+      .eq("is_public", true)
       .order("created_at", { ascending: false });
 
     setVideos(data || []);

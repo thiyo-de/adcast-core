@@ -25,6 +25,7 @@ export default function Home() {
     const { data: featured } = await supabase
       .from("videos")
       .select("*")
+      .eq("is_public", true)
       .order("created_at", { ascending: false })
       .limit(3);
 
@@ -32,6 +33,7 @@ export default function Home() {
     const { data: trending } = await supabase
       .from("videos")
       .select("*")
+      .eq("is_public", true)
       .order("views", { ascending: false })
       .limit(8);
 

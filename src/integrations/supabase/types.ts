@@ -21,6 +21,7 @@ export type Database = {
           description: string | null
           embed_code: string
           id: string
+          is_public: boolean
           likes: number | null
           slug: string
           tags: string[] | null
@@ -35,6 +36,7 @@ export type Database = {
           description?: string | null
           embed_code: string
           id?: string
+          is_public?: boolean
           likes?: number | null
           slug: string
           tags?: string[] | null
@@ -49,6 +51,7 @@ export type Database = {
           description?: string | null
           embed_code?: string
           id?: string
+          is_public?: boolean
           likes?: number | null
           slug?: string
           tags?: string[] | null

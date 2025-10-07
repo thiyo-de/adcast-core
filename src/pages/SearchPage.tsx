@@ -22,6 +22,7 @@ export default function SearchPage() {
     const { data } = await supabase
       .from("videos")
       .select("*")
+      .eq("is_public", true)
       .or(`title.ilike.%${query}%,description.ilike.%${query}%`)
       .order("created_at", { ascending: false });
 

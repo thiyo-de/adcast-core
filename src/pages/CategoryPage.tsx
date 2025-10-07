@@ -22,6 +22,7 @@ export default function CategoryPage() {
       .from("videos")
       .select("*")
       .eq("category", category)
+      .eq("is_public", true)
       .order("created_at", { ascending: false });
 
     setVideos(data || []);
