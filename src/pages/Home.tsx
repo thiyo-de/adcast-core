@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { VideoCard } from "@/components/VideoCard";
+import { VideoCardSkeleton } from "@/components/VideoCardSkeleton";
 import { AdBanner } from "@/components/AdBanner";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
@@ -11,6 +12,7 @@ export default function Home() {
   const [featuredVideos, setFeaturedVideos] = useState<any[]>([]);
   const [trendingVideos, setTrendingVideos] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     fetchVideos();
@@ -18,6 +20,7 @@ export default function Home() {
   }, []);
 
   const fetchVideos = async () => {
+    setIsLoading(true);
     // Fetch featured videos (most recent)
     const { data: featured } = await supabase
       .from("videos")
@@ -34,6 +37,7 @@ export default function Home() {
 
     setFeaturedVideos(featured || []);
     setTrendingVideos(trending || []);
+    setIsLoading(false);
   };
 
   const fetchCategories = async () => {
@@ -58,16 +62,22 @@ export default function Home() {
         </div>
 
         {/* Featured Section */}
-        {featuredVideos.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-3xl font-bold mb-6 text-gradient">Featured Videos</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featuredVideos.map((video) => (
+        <section className="mb-12">
+          <h2 className="text-3xl font-bold mb-6 text-gradient">Featured Videos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {isLoading ? (
+              <>
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+              </>
+            ) : (
+              featuredVideos.map((video) => (
                 <VideoCard key={video.id} {...video} />
-              ))}
-            </div>
-          </section>
-        )}
+              ))
+            )}
+          </div>
+        </section>
 
         {/* Categories Section */}
         {categories.length > 0 && (
@@ -86,16 +96,27 @@ export default function Home() {
         )}
 
         {/* Trending Section */}
-        {trendingVideos.length > 0 && (
-          <section>
-            <h2 className="text-2xl font-bold mb-6">Trending Now 🔥</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {trendingVideos.map((video) => (
+        <section>
+          <h2 className="text-2xl font-bold mb-6">Trending Now 🔥</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {isLoading ? (
+              <>
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+                <VideoCardSkeleton />
+              </>
+            ) : (
+              trendingVideos.map((video) => (
                 <VideoCard key={video.id} {...video} />
-              ))}
-            </div>
-          </section>
-        )}
+              ))
+            )}
+          </div>
+        </section>
 
         {/* Bottom Ad */}
         <div className="flex justify-center mt-12">
