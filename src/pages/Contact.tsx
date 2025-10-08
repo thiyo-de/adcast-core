@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { AdUnit } from "@/components/AdUnit";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -17,6 +18,11 @@ export default function Contact() {
       <Header />
       
       <main className="container mx-auto px-4 py-12">
+        {/* Header Leaderboard Ad */}
+        <div className="flex justify-center mb-8">
+          <AdUnit size="728x90" />
+        </div>
+
         <div className="max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <MessageSquare className="h-8 w-8 text-primary" />
@@ -67,6 +73,11 @@ export default function Contact() {
               Send Message
             </Button>
           </form>
+        </div>
+
+        {/* Footer Leaderboard Ad */}
+        <div className="flex justify-center mt-12">
+          <AdUnit size="728x90" />
         </div>
       </main>
 

@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { VideoCard } from "@/components/VideoCard";
-import { AdBanner } from "@/components/AdBanner";
+import { AdUnit } from "@/components/AdUnit";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -123,9 +123,9 @@ export default function VideoPage() {
       <Header />
       
       <div className="container mx-auto px-4 py-8">
-        {/* Top Banner Ad */}
+        {/* Top Leaderboard Ad */}
         <div className="flex justify-center mb-6">
-          <AdBanner size="728x90" />
+          <AdUnit size="728x90" />
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -185,7 +185,7 @@ export default function VideoPage() {
 
             {/* Inline Ad */}
             <div className="mb-8">
-              <AdBanner size="728x90" />
+              <AdUnit size="728x90" />
             </div>
 
             {/* Suggested Videos */}
@@ -197,14 +197,19 @@ export default function VideoPage() {
                     <VideoCard key={suggestedVideo.id} {...suggestedVideo} />
                   ))}
                 </div>
+                
+                {/* Inline Ad below suggested videos */}
+                <div className="flex justify-center mt-6">
+                  <AdUnit size="728x90" />
+                </div>
               </div>
             )}
           </div>
 
           {/* Sidebar */}
           <div className="space-y-6">
-            <AdBanner size="300x250" />
-            <AdBanner size="300x600" className="hidden xl:block" />
+            <AdUnit size="300x250" />
+            <AdUnit size="300x600" className="hidden xl:block" />
           </div>
         </div>
       </div>

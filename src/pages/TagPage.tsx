@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { VideoCard } from "@/components/VideoCard";
+import { AdUnit } from "@/components/AdUnit";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +35,11 @@ export default function TagPage() {
       <Header />
       
       <main className="container mx-auto px-4 py-8">
+        {/* Header Leaderboard Ad */}
+        <div className="flex justify-center mb-8">
+          <AdUnit size="728x90" />
+        </div>
+
         <h1 className="text-4xl font-bold mb-8">
           Videos tagged with <span className="text-gradient">#{tag}</span>
         </h1>
@@ -53,6 +59,11 @@ export default function TagPage() {
             <p className="text-xl text-muted-foreground">No videos found with this tag</p>
           </div>
         )}
+
+        {/* Footer Leaderboard Ad */}
+        <div className="flex justify-center mt-12">
+          <AdUnit size="728x90" />
+        </div>
       </main>
 
       <Footer />

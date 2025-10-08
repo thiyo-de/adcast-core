@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { VideoCard } from "@/components/VideoCard";
 import { VideoCardSkeleton } from "@/components/VideoCardSkeleton";
-import { AdBanner } from "@/components/AdBanner";
+import { AdUnit } from "@/components/AdUnit";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -58,9 +58,9 @@ export default function Home() {
       <Header />
 
       <main className="container mx-auto px-4 py-8">
-        {/* Top Banner Ad */}
+        {/* Top Leaderboard Ad */}
         <div className="flex justify-center mb-8">
-          <AdBanner size="728x90" />
+          <AdUnit size="728x90" />
         </div>
 
         {/* Featured Section */}
@@ -97,7 +97,7 @@ export default function Home() {
           </section>
         )}
 
-        {/* Trending Section */}
+        {/* Trending Section with Inline Ads */}
         <section>
           <h2 className="text-2xl font-bold mb-6">Trending Now 🔥</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -113,16 +113,24 @@ export default function Home() {
                 <VideoCardSkeleton />
               </>
             ) : (
-              trendingVideos.map((video) => (
-                <VideoCard key={video.id} {...video} />
+              trendingVideos.map((video, index) => (
+                <>
+                  <VideoCard key={video.id} {...video} />
+                  {/* Inline Ad every 6 videos */}
+                  {(index + 1) % 6 === 0 && index !== trendingVideos.length - 1 && (
+                    <div className="col-span-full flex justify-center my-4">
+                      <AdUnit size="728x90" />
+                    </div>
+                  )}
+                </>
               ))
             )}
           </div>
         </section>
 
-        {/* Bottom Ad */}
+        {/* Footer Leaderboard Ad */}
         <div className="flex justify-center mt-12">
-          <AdBanner size="728x90" />
+          <AdUnit size="728x90" />
         </div>
       </main>
 

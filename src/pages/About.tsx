@@ -1,5 +1,6 @@
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { AdUnit } from "@/components/AdUnit";
 import { Video } from "lucide-react";
 
 export default function About() {
@@ -8,6 +9,11 @@ export default function About() {
       <Header />
       
       <main className="container mx-auto px-4 py-12">
+        {/* Header Leaderboard Ad */}
+        <div className="flex justify-center mb-8">
+          <AdUnit size="728x90" />
+        </div>
+
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center gap-3 mb-8">
             <div className="rounded-lg bg-primary p-3">
@@ -45,6 +51,11 @@ export default function About() {
               varies based on geographical restrictions imposed by our partner platforms.
             </p>
           </div>
+        </div>
+
+        {/* Footer Leaderboard Ad */}
+        <div className="flex justify-center mt-12">
+          <AdUnit size="728x90" />
         </div>
       </main>
 
