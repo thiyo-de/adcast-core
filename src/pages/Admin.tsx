@@ -11,6 +11,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Eye, Heart, Trash2, Edit, Plus } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -19,8 +21,16 @@ export default function Admin() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [videos, setVideos] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [editingVideo, setEditingVideo] = useState<any>(null);
+  const [editingCategory, setEditingCategory] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("videos");
+  const [categoryFormOpen, setCategoryFormOpen] = useState(false);
+  const [categoryFormData, setCategoryFormData] = useState({
+    name: "",
+    slug: "",
+    description: "",
+  });
 
   const [formData, setFormData] = useState({
     title: "",
@@ -40,6 +50,7 @@ export default function Admin() {
   useEffect(() => {
     if (isAuthenticated) {
       fetchVideos();
+      fetchCategories();
     }
   }, [isAuthenticated]);
 
@@ -108,6 +119,87 @@ export default function Admin() {
       .select("*")
       .order("created_at", { ascending: false });
     setVideos(data || []);
+  };
+
+  const fetchCategories = async () => {
+    const { data } = await supabase
+      .from("categories")
+      .select("*")
+      .order("name");
+    setCategories(data || []);
+  };
+
+  const handleCategorySubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (editingCategory) {
+      const { error } = await supabase
+        .from("categories")
+        .update(categoryFormData)
+        .eq("id", editingCategory.id);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to update category",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({ title: "Success", description: "Category updated successfully" });
+    } else {
+      const { error } = await supabase
+        .from("categories")
+        .insert(categoryFormData);
+
+      if (error) {
+        toast({
+          title: "Error",
+          description: "Failed to create category",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      toast({ title: "Success", description: "Category created successfully" });
+    }
+
+    setCategoryFormData({ name: "", slug: "", description: "" });
+    setEditingCategory(null);
+    setCategoryFormOpen(false);
+    fetchCategories();
+  };
+
+  const handleCategoryEdit = (category: any) => {
+    setEditingCategory(category);
+    setCategoryFormData({
+      name: category.name,
+      slug: category.slug,
+      description: category.description || "",
+    });
+    setCategoryFormOpen(true);
+  };
+
+  const handleCategoryDelete = async (id: string) => {
+    if (!confirm("Are you sure you want to delete this category?")) return;
+
+    const { error } = await supabase
+      .from("categories")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete category",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({ title: "Success", description: "Category deleted successfully" });
+    fetchCategories();
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -249,6 +341,7 @@ export default function Admin() {
           <TabsList className="w-full sm:w-auto">
             <TabsTrigger value="videos" className="flex-1 sm:flex-initial text-xs sm:text-sm">Videos</TabsTrigger>
             <TabsTrigger value="add" className="flex-1 sm:flex-initial text-xs sm:text-sm">Add/Edit</TabsTrigger>
+            <TabsTrigger value="categories" className="flex-1 sm:flex-initial text-xs sm:text-sm">Categories</TabsTrigger>
             <TabsTrigger value="analytics" className="flex-1 sm:flex-initial text-xs sm:text-sm">Analytics</TabsTrigger>
           </TabsList>
 
@@ -372,13 +465,22 @@ export default function Admin() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">Category *</label>
-                  <Input
+                  <Select
                     value={formData.category}
-                    onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="Entertainment, Music, Sports, etc."
+                    onValueChange={(value) => setFormData({ ...formData, category: value })}
                     required
-                    className="min-h-[44px]"
-                  />
+                  >
+                    <SelectTrigger className="min-h-[44px]">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.name}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
@@ -444,6 +546,123 @@ export default function Admin() {
                   )}
                 </div>
               </form>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="categories">
+            <Card className="p-3 sm:p-4 lg:p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg sm:text-xl font-bold">Manage Categories</h2>
+                <Dialog open={categoryFormOpen} onOpenChange={setCategoryFormOpen}>
+                  <DialogTrigger asChild>
+                    <Button
+                      onClick={() => {
+                        setEditingCategory(null);
+                        setCategoryFormData({ name: "", slug: "", description: "" });
+                      }}
+                      className="min-h-[44px]"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add Category
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {editingCategory ? "Edit Category" : "Add New Category"}
+                      </DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleCategorySubmit} className="space-y-4">
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Name *</label>
+                        <Input
+                          value={categoryFormData.name}
+                          onChange={(e) => setCategoryFormData({ ...categoryFormData, name: e.target.value })}
+                          required
+                          className="min-h-[44px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Slug * (URL-friendly)</label>
+                        <Input
+                          value={categoryFormData.slug}
+                          onChange={(e) => setCategoryFormData({ ...categoryFormData, slug: e.target.value })}
+                          placeholder="e.g., technology"
+                          required
+                          className="min-h-[44px]"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Description</label>
+                        <Textarea
+                          value={categoryFormData.description}
+                          onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
+                          rows={3}
+                          className="min-h-[44px]"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button type="submit" className="min-h-[44px]">
+                          {editingCategory ? "Update" : "Create"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            setCategoryFormOpen(false);
+                            setEditingCategory(null);
+                            setCategoryFormData({ name: "", slug: "", description: "" });
+                          }}
+                          className="min-h-[44px]"
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+              </div>
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Slug</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <TableRow key={category.id}>
+                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell>{category.slug}</TableCell>
+                        <TableCell>{category.description || "—"}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCategoryEdit(category)}
+                              className="min-h-[44px]"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleCategoryDelete(category.id)}
+                              className="min-h-[44px]"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </Card>
           </TabsContent>
 
