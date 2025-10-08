@@ -26,7 +26,7 @@ export const Header = () => {
             <div className="rounded-lg bg-primary p-1.5 sm:p-2 transition-transform group-hover:scale-110">
               <Video className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
             </div>
-            <span className="text-lg sm:text-xl font-bold text-gradient">AdCast</span>
+            <span className="text-lg sm:text-xl font-heading font-bold text-gradient">AdCast</span>
           </Link>
 
           {/* Desktop Search */}

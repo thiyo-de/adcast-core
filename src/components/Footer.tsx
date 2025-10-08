@@ -11,7 +11,7 @@ export const Footer = () => {
               <div className="rounded-lg bg-primary p-1.5 sm:p-2">
                 <Video className="h-4 w-4 sm:h-5 sm:w-5 text-primary-foreground" />
               </div>
-              <span className="text-base sm:text-lg font-bold text-gradient">AdCast</span>
+              <span className="text-base sm:text-lg font-heading font-bold text-gradient">AdCast</span>
             </div>
             <p className="text-sm text-muted-foreground">
               Discover and watch amazing video content from around the web.
