@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -13,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { PaginationControls } from "@/components/PaginationControls";
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -31,6 +32,13 @@ export default function Admin() {
     slug: "",
     description: "",
   });
+
+  // Search and filter states
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchField, setSearchField] = useState<'all' | 'title' | 'description' | 'category' | 'tags' | 'link'>('all');
+  const [visibilityFilter, setVisibilityFilter] = useState<'all' | 'public' | 'unlisted'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const [formData, setFormData] = useState({
     title: "",
@@ -112,6 +120,77 @@ export default function Admin() {
     setIsAuthenticated(false);
     navigate("/");
   };
+
+  // Helper function to extract slug from URL
+  const extractSlugFromUrl = (input: string): string => {
+    if (input.includes('/video/')) {
+      const parts = input.split('/video/');
+      return parts[1]?.split('?')[0].split('#')[0] || input;
+    }
+    return input.trim();
+  };
+
+  // Filter and search videos
+  const filteredVideos = useMemo(() => {
+    let result = [...videos];
+    
+    // Apply search query
+    if (searchQuery.trim()) {
+      result = result.filter(video => {
+        const query = searchQuery.toLowerCase();
+        
+        switch (searchField) {
+          case 'title':
+            return video.title.toLowerCase().includes(query);
+          case 'description':
+            return video.description?.toLowerCase().includes(query);
+          case 'category':
+            return video.category.toLowerCase().includes(query);
+          case 'tags':
+            return video.tags?.some((tag: string) => tag.toLowerCase().includes(query));
+          case 'link':
+            const slug = extractSlugFromUrl(query);
+            return video.slug.toLowerCase() === slug.toLowerCase();
+          case 'all':
+          default:
+            return (
+              video.title.toLowerCase().includes(query) ||
+              video.description?.toLowerCase().includes(query) ||
+              video.category.toLowerCase().includes(query) ||
+              video.tags?.some((tag: string) => tag.toLowerCase().includes(query)) ||
+              video.slug.toLowerCase().includes(query)
+            );
+        }
+      });
+    }
+    
+    // Apply visibility filter
+    if (visibilityFilter !== 'all') {
+      result = result.filter(video => 
+        visibilityFilter === 'public' ? video.is_public : !video.is_public
+      );
+    }
+    
+    return result;
+  }, [videos, searchQuery, searchField, visibilityFilter]);
+
+  // Pagination logic
+  const totalPages = Math.ceil(filteredVideos.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedVideos = filteredVideos.slice(startIndex, endIndex);
+
+  const goToPage = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Reset to page 1 when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, searchField, visibilityFilter]);
 
   const fetchVideos = async () => {
     const { data } = await supabase
@@ -347,7 +426,71 @@ export default function Admin() {
 
           <TabsContent value="videos">
             <Card className="p-3 sm:p-4 lg:p-6">
-              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Manage Videos</h2>
+              <h2 className="text-lg sm:text-xl font-bold mb-4">Manage Videos</h2>
+              
+              {/* Search Section */}
+              <div className="space-y-3 mb-6">
+                {/* Search Input and Field Selector */}
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Input
+                    placeholder="Search videos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="flex-1"
+                  />
+                  <Select value={searchField} onValueChange={(value: any) => setSearchField(value)}>
+                    <SelectTrigger className="w-full sm:w-[200px]">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Fields</SelectItem>
+                      <SelectItem value="title">Title</SelectItem>
+                      <SelectItem value="description">Description</SelectItem>
+                      <SelectItem value="category">Category</SelectItem>
+                      <SelectItem value="tags">Tags</SelectItem>
+                      <SelectItem value="link">🔗 Link/Slug</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                {/* Helper text for link search */}
+                {searchField === 'link' && (
+                  <p className="text-sm text-muted-foreground">
+                    💡 Paste the full video URL or just the slug to find by link
+                  </p>
+                )}
+                
+                {/* Quick Filters */}
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant={visibilityFilter === 'all' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setVisibilityFilter('all')}
+                  >
+                    All
+                  </Button>
+                  <Button
+                    variant={visibilityFilter === 'public' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setVisibilityFilter('public')}
+                  >
+                    Public
+                  </Button>
+                  <Button
+                    variant={visibilityFilter === 'unlisted' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setVisibilityFilter('unlisted')}
+                  >
+                    Unlisted
+                  </Button>
+                </div>
+                
+                {/* Results count */}
+                <p className="text-sm text-muted-foreground">
+                  Showing {filteredVideos.length > 0 ? startIndex + 1 : 0}-{Math.min(endIndex, filteredVideos.length)} of {filteredVideos.length} videos
+                </p>
+              </div>
+              
               <div className="overflow-x-auto -mx-3 sm:-mx-4 lg:-mx-6">
                 <div className="inline-block min-w-full align-middle">
                   <div className="overflow-hidden">
@@ -362,8 +505,27 @@ export default function Admin() {
                           <TableHead className="min-w-[120px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
-                      <TableBody>
-                        {videos.map((video) => (
+                <TableBody>
+                  {paginatedVideos.length === 0 ? (
+                    <TableRow>
+                      <TableCell colSpan={7} className="text-center py-8">
+                        <p className="text-muted-foreground">
+                          {searchQuery ? `No videos found matching "${searchQuery}"` : "No videos found"}
+                        </p>
+                        {searchQuery && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSearchQuery("")}
+                            className="mt-4"
+                          >
+                            Clear search
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    paginatedVideos.map((video) => (
                           <TableRow key={video.id}>
                             <TableCell className="font-medium">{video.title}</TableCell>
                             <TableCell>{video.category}</TableCell>
@@ -404,13 +566,25 @@ export default function Admin() {
                                 </Button>
                               </div>
                             </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
+                      </TableRow>
+                    ))
+                  )}
+                </TableBody>
+              </Table>
                   </div>
                 </div>
               </div>
+            
+              {/* Pagination */}
+              {totalPages > 1 && (
+                <div className="mt-6">
+                  <PaginationControls
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    onPageChange={goToPage}
+                  />
+                </div>
+              )}
             </Card>
           </TabsContent>
 
@@ -419,114 +593,85 @@ export default function Admin() {
               <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
                 {editingVideo ? "Edit Video" : "Add New Video"}
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium mb-2">Title *</label>
+                  <label className="block text-sm font-medium mb-2">Title</label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
-                    className="min-h-[44px]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium mb-2">Slug * (URL-friendly)</label>
+                  <label className="block text-sm font-medium mb-2">Slug (URL-friendly)</label>
                   <Input
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                    placeholder="my-video-title"
                     required
-                    className="min-h-[44px]"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-2">Description</label>
                   <Textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                    rows={3}
-                    className="min-h-[44px]"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium mb-2">Embed Code * (iframe)</label>
-                  <Textarea
-                    value={formData.embed_code}
-                    onChange={(e) => setFormData({ ...formData, embed_code: e.target.value })}
-                    rows={4}
-                    placeholder='<iframe src="..." ...></iframe>'
-                    required
-                    className="min-h-[44px]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Category *</label>
-                  <Select
-                    value={formData.category}
-                    onValueChange={(value) => setFormData({ ...formData, category: value })}
-                    required
-                  >
-                    <SelectTrigger className="min-h-[44px]">
-                      <SelectValue placeholder="Select a category" />
+                  <label className="block text-sm font-medium mb-2">Category</label>
+                  <Select value={formData.category} onValueChange={(value) => setFormData({ ...formData, category: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select category" />
                     </SelectTrigger>
                     <SelectContent>
-                      {categories.map((category) => (
-                        <SelectItem key={category.id} value={category.name}>
-                          {category.name}
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.slug}>
+                          {cat.name}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
                 </div>
-
                 <div>
-                  <label className="block text-sm font-medium mb-2">Tags (comma separated)</label>
+                  <label className="block text-sm font-medium mb-2">Tags (comma-separated)</label>
                   <Input
                     value={formData.tags}
                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
-                    placeholder="funny, viral, trending"
-                    className="min-h-[44px]"
+                    placeholder="tag1, tag2, tag3"
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-2">Thumbnail URL</label>
                   <Input
                     value={formData.thumbnail_url}
                     onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
-                    placeholder="https://..."
-                    className="min-h-[44px]"
                   />
                 </div>
-
-                <div className="flex items-center justify-between p-3 sm:p-4 border rounded-lg">
-                  <div className="space-y-0.5">
-                    <label className="text-sm font-medium">Video Visibility</label>
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {formData.is_public 
-                        ? "Video is visible on all public pages" 
-                        : "Video is unlisted but accessible via direct link"}
-                    </p>
-                  </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2">Embed Code</label>
+                  <Textarea
+                    value={formData.embed_code}
+                    onChange={(e) => setFormData({ ...formData, embed_code: e.target.value })}
+                    placeholder="<iframe src='...'></iframe>"
+                    required
+                  />
+                </div>
+                <div className="flex items-center gap-2">
                   <Switch
+                    id="is_public"
                     checked={formData.is_public}
                     onCheckedChange={(checked) => setFormData({ ...formData, is_public: checked })}
                   />
+                  <label htmlFor="is_public" className="text-sm font-medium">
+                    Public (visible to all)
+                  </label>
                 </div>
-
-                <div className="flex flex-col sm:flex-row gap-2">
-                  <Button type="submit" className="min-h-[44px]">
-                    {editingVideo ? "Update Video" : "Create Video"}
-                  </Button>
+                <div className="flex gap-2">
+                  <Button type="submit">{editingVideo ? "Update Video" : "Add Video"}</Button>
                   {editingVideo && (
                     <Button
                       type="button"
                       variant="outline"
-                      className="min-h-[44px]"
                       onClick={() => {
                         setEditingVideo(null);
                         setFormData({
@@ -555,41 +700,33 @@ export default function Admin() {
                 <h2 className="text-lg sm:text-xl font-bold">Manage Categories</h2>
                 <Dialog open={categoryFormOpen} onOpenChange={setCategoryFormOpen}>
                   <DialogTrigger asChild>
-                    <Button
-                      onClick={() => {
-                        setEditingCategory(null);
-                        setCategoryFormData({ name: "", slug: "", description: "" });
-                      }}
-                      className="min-h-[44px]"
-                    >
+                    <Button onClick={() => {
+                      setEditingCategory(null);
+                      setCategoryFormData({ name: "", slug: "", description: "" });
+                    }}>
                       <Plus className="h-4 w-4 mr-2" />
                       Add Category
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
                     <DialogHeader>
-                      <DialogTitle>
-                        {editingCategory ? "Edit Category" : "Add New Category"}
-                      </DialogTitle>
+                      <DialogTitle>{editingCategory ? "Edit Category" : "Add New Category"}</DialogTitle>
                     </DialogHeader>
                     <form onSubmit={handleCategorySubmit} className="space-y-4">
                       <div>
-                        <label className="block text-sm font-medium mb-2">Name *</label>
+                        <label className="block text-sm font-medium mb-2">Name</label>
                         <Input
                           value={categoryFormData.name}
                           onChange={(e) => setCategoryFormData({ ...categoryFormData, name: e.target.value })}
                           required
-                          className="min-h-[44px]"
                         />
                       </div>
                       <div>
-                        <label className="block text-sm font-medium mb-2">Slug * (URL-friendly)</label>
+                        <label className="block text-sm font-medium mb-2">Slug</label>
                         <Input
                           value={categoryFormData.slug}
                           onChange={(e) => setCategoryFormData({ ...categoryFormData, slug: e.target.value })}
-                          placeholder="e.g., technology"
                           required
-                          className="min-h-[44px]"
                         />
                       </div>
                       <div>
@@ -597,72 +734,50 @@ export default function Admin() {
                         <Textarea
                           value={categoryFormData.description}
                           onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
-                          rows={3}
-                          className="min-h-[44px]"
                         />
                       </div>
-                      <div className="flex gap-2">
-                        <Button type="submit" className="min-h-[44px]">
-                          {editingCategory ? "Update" : "Create"}
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="outline"
-                          onClick={() => {
-                            setCategoryFormOpen(false);
-                            setEditingCategory(null);
-                            setCategoryFormData({ name: "", slug: "", description: "" });
-                          }}
-                          className="min-h-[44px]"
-                        >
-                          Cancel
-                        </Button>
-                      </div>
+                      <Button type="submit">{editingCategory ? "Update" : "Create"}</Button>
                     </form>
                   </DialogContent>
                 </Dialog>
               </div>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Name</TableHead>
-                      <TableHead>Slug</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Actions</TableHead>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Slug</TableHead>
+                    <TableHead>Description</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {categories.map((category) => (
+                    <TableRow key={category.id}>
+                      <TableCell className="font-medium">{category.name}</TableCell>
+                      <TableCell>{category.slug}</TableCell>
+                      <TableCell>{category.description || "-"}</TableCell>
+                      <TableCell>
+                        <div className="flex gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleCategoryEdit(category)}
+                          >
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleCategoryDelete(category.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {categories.map((category) => (
-                      <TableRow key={category.id}>
-                        <TableCell className="font-medium">{category.name}</TableCell>
-                        <TableCell>{category.slug}</TableCell>
-                        <TableCell>{category.description || "—"}</TableCell>
-                        <TableCell>
-                          <div className="flex gap-2">
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={() => handleCategoryEdit(category)}
-                              className="min-h-[44px]"
-                            >
-                              <Edit className="h-4 w-4" />
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="destructive"
-                              onClick={() => handleCategoryDelete(category.id)}
-                              className="min-h-[44px]"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                  ))}
+                </TableBody>
+              </Table>
             </Card>
           </TabsContent>
 
