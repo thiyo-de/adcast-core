@@ -4,6 +4,8 @@ import { VideoCard } from "@/components/VideoCard";
 import { AdUnit } from "@/components/AdUnit";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { PaginationControls } from "@/components/PaginationControls";
+import { usePagination } from "@/hooks/usePagination";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function TagPage() {
@@ -11,9 +13,13 @@ export default function TagPage() {
   const [videos, setVideos] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { currentPage, totalPages, startIndex, endIndex, goToPage, resetPage } = usePagination(videos.length);
+  const paginatedVideos = videos.slice(startIndex, endIndex);
+
   useEffect(() => {
     if (tag) {
       fetchVideos();
+      resetPage();
     }
   }, [tag]);
 
@@ -49,11 +55,14 @@ export default function TagPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {videos.map((video) => (
-              <VideoCard key={video.id} {...video} />
-            ))}
-          </div>
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+              {paginatedVideos.map((video) => (
+                <VideoCard key={video.id} {...video} />
+              ))}
+            </div>
+            <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />
+          </>
         ) : (
           <div className="text-center py-12">
             <p className="text-lg sm:text-xl text-muted-foreground">No videos found with this tag</p>

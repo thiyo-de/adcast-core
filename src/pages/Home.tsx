@@ -7,6 +7,8 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { FeaturedCarousel } from "@/components/FeaturedCarousel";
+import { PaginationControls } from "@/components/PaginationControls";
+import { usePagination } from "@/hooks/usePagination";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Home() {
@@ -14,6 +16,9 @@ export default function Home() {
   const [trendingVideos, setTrendingVideos] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { currentPage, totalPages, startIndex, endIndex, goToPage } = usePagination(trendingVideos.length);
+  const paginatedVideos = trendingVideos.slice(startIndex, endIndex);
 
   useEffect(() => {
     fetchVideos();
@@ -30,13 +35,13 @@ export default function Home() {
       .order("created_at", { ascending: false })
       .limit(3);
 
-    // Fetch trending videos (most viewed)
+    // Fetch trending videos (most viewed) - fetch more for pagination
     const { data: trending } = await supabase
       .from("videos")
       .select("*")
       .eq("is_public", true)
       .order("views", { ascending: false })
-      .limit(8);
+      .limit(200);
 
     setFeaturedVideos(featured || []);
     setTrendingVideos(trending || []);
@@ -104,11 +109,11 @@ export default function Home() {
                 <VideoCardSkeleton />
               </>
             ) : (
-              trendingVideos.map((video, index) => (
+              paginatedVideos.map((video, index) => (
                 <>
                   <VideoCard key={video.id} {...video} />
                   {/* Inline Ad every 6 videos - Hidden on mobile */}
-                  {(index + 1) % 6 === 0 && index !== trendingVideos.length - 1 && (
+                  {(index + 1) % 6 === 0 && index !== paginatedVideos.length - 1 && (
                     <div className="hidden sm:flex col-span-full justify-center my-4">
                       <AdUnit size="728x90" />
                     </div>
@@ -117,6 +122,8 @@ export default function Home() {
               ))
             )}
           </div>
+
+          {!isLoading && <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />}
         </section>
 
         {/* Footer Leaderboard Ad - Hidden on mobile */}
