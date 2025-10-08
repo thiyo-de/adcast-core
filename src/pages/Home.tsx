@@ -1,24 +1,19 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { VideoCard } from "@/components/VideoCard";
-import { VideoCardSkeleton } from "@/components/VideoCardSkeleton";
 import { AdUnit } from "@/components/AdUnit";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { FeaturedCarousel } from "@/components/FeaturedCarousel";
-import { PaginationControls } from "@/components/PaginationControls";
-import { usePagination } from "@/hooks/usePagination";
+import { VideoSection } from "@/components/VideoSection";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Home() {
   const [featuredVideos, setFeaturedVideos] = useState<any[]>([]);
   const [trendingVideos, setTrendingVideos] = useState<any[]>([]);
+  const [allVideos, setAllVideos] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const { currentPage, totalPages, startIndex, endIndex, goToPage } = usePagination(trendingVideos.length);
-  const paginatedVideos = trendingVideos.slice(startIndex, endIndex);
 
   useEffect(() => {
     fetchVideos();
@@ -27,7 +22,7 @@ export default function Home() {
 
   const fetchVideos = async () => {
     setIsLoading(true);
-    // Fetch trending videos (most viewed) - fetch more for pagination
+    // Fetch trending videos (most viewed)
     const { data: trending } = await supabase
       .from("videos")
       .select("*")
@@ -35,9 +30,18 @@ export default function Home() {
       .order("views", { ascending: false })
       .limit(200);
 
-    // Use top 5 trending videos for carousel, all for grid
+    // Fetch all videos (most recent)
+    const { data: all } = await supabase
+      .from("videos")
+      .select("*")
+      .eq("is_public", true)
+      .order("created_at", { ascending: false })
+      .limit(200);
+
+    // Use top 5 trending videos for carousel
     setFeaturedVideos(trending?.slice(0, 5) || []);
     setTrendingVideos(trending || []);
+    setAllVideos(all || []);
     setIsLoading(false);
   };
 
@@ -86,38 +90,29 @@ export default function Home() {
           </section>
         )}
 
-        {/* Trending Section with Inline Ads */}
-        <section>
-          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Trending Now 🔥</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-            {isLoading ? (
-              <>
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-              </>
-            ) : (
-              paginatedVideos.map((video, index) => (
-                <>
-                  <VideoCard key={video.id} {...video} />
-                  {/* Inline Ad every 6 videos - Hidden on mobile */}
-                  {(index + 1) % 6 === 0 && index !== paginatedVideos.length - 1 && (
-                    <div className="hidden sm:flex col-span-full justify-center my-4">
-                      <AdUnit size="728x90" />
-                    </div>
-                  )}
-                </>
-              ))
-            )}
-          </div>
+        {/* Featured Videos Section */}
+        <VideoSection
+          title="Featured Videos ⭐"
+          videos={trendingVideos}
+          isLoading={isLoading}
+          viewMoreLink="/featured"
+        />
 
-          {!isLoading && <PaginationControls currentPage={currentPage} totalPages={totalPages} onPageChange={goToPage} />}
-        </section>
+        {/* Trending Now Section */}
+        <VideoSection
+          title="Trending Now 🔥"
+          videos={trendingVideos}
+          isLoading={isLoading}
+          viewMoreLink="/trending"
+        />
+
+        {/* All Videos Section */}
+        <VideoSection
+          title="All Videos 📺"
+          videos={allVideos}
+          isLoading={isLoading}
+          viewMoreLink="/all-videos"
+        />
 
         {/* Footer Leaderboard Ad - Hidden on mobile */}
         <div className="hidden sm:flex justify-center mt-8 lg:mt-12">

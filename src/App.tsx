@@ -11,6 +11,9 @@ import TagPage from "./pages/TagPage";
 import SearchPage from "./pages/SearchPage";
 import Terms from "./pages/Terms";
 import Admin from "./pages/Admin";
+import FeaturedPage from "./pages/FeaturedPage";
+import TrendingPage from "./pages/TrendingPage";
+import AllVideosPage from "./pages/AllVideosPage";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +32,9 @@ const App = () => (
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Terms />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/featured" element={<FeaturedPage />} />
+          <Route path="/trending" element={<TrendingPage />} />
+          <Route path="/all-videos" element={<AllVideosPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
