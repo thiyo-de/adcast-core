@@ -27,14 +27,6 @@ export default function Home() {
 
   const fetchVideos = async () => {
     setIsLoading(true);
-    // Fetch featured videos (most recent)
-    const { data: featured } = await supabase
-      .from("videos")
-      .select("*")
-      .eq("is_public", true)
-      .order("created_at", { ascending: false })
-      .limit(3);
-
     // Fetch trending videos (most viewed) - fetch more for pagination
     const { data: trending } = await supabase
       .from("videos")
@@ -43,7 +35,8 @@ export default function Home() {
       .order("views", { ascending: false })
       .limit(200);
 
-    setFeaturedVideos(featured || []);
+    // Use top 5 trending videos for carousel, all for grid
+    setFeaturedVideos(trending?.slice(0, 5) || []);
     setTrendingVideos(trending || []);
     setIsLoading(false);
   };
