@@ -89,20 +89,6 @@ export const AdUnit = ({
     );
   }
 
-  // Fallback: Placeholder ad
-  return (
-    <div className={cn("overflow-hidden rounded-lg border border-border/50", className)}>
-      <div className="relative group">
-        <img
-          src={placeholderImages[size]}
-          alt={`Advertisement ${size}`}
-          className="w-full h-auto"
-          style={{ maxWidth: `${width}px`, maxHeight: `${height}px` }}
-        />
-        <div className="absolute top-1 right-1 bg-black/60 text-white text-[10px] px-2 py-0.5 rounded">
-          Ad
-        </div>
-      </div>
-    </div>
-  );
+  // Fallback: Return nothing (no placeholder ads)
+  return null;
 };
