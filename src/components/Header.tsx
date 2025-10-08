@@ -43,19 +43,6 @@ export const Header = () => {
             </div>
           </form>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-4 lg:gap-6">
-            <Link to="/" className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap">
-              Home
-            </Link>
-            <Link to="/about" className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap">
-              About
-            </Link>
-            <Link to="/contact" className="text-sm font-medium hover:text-primary transition-colors whitespace-nowrap">
-              Contact
-            </Link>
-          </nav>
-
           {/* Mobile Menu */}
           <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
@@ -78,31 +65,6 @@ export const Header = () => {
                     />
                   </div>
                 </form>
-
-                {/* Mobile Navigation */}
-                <nav className="flex flex-col gap-4">
-                  <Link 
-                    to="/" 
-                    className="text-base font-medium hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Home
-                  </Link>
-                  <Link 
-                    to="/about" 
-                    className="text-base font-medium hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    About
-                  </Link>
-                  <Link 
-                    to="/contact" 
-                    className="text-base font-medium hover:text-primary transition-colors py-2"
-                    onClick={() => setMobileMenuOpen(false)}
-                  >
-                    Contact
-                  </Link>
-                </nav>
               </div>
             </SheetContent>
           </Sheet>

@@ -9,8 +9,6 @@ import VideoPage from "./pages/VideoPage";
 import CategoryPage from "./pages/CategoryPage";
 import TagPage from "./pages/TagPage";
 import SearchPage from "./pages/SearchPage";
-import About from "./pages/About";
-import Contact from "./pages/Contact";
 import Terms from "./pages/Terms";
 import Admin from "./pages/Admin";
 
@@ -28,8 +26,6 @@ const App = () => (
           <Route path="/category/:category" element={<CategoryPage />} />
           <Route path="/tag/:tag" element={<TagPage />} />
           <Route path="/search" element={<SearchPage />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
           <Route path="/terms" element={<Terms />} />
           <Route path="/privacy" element={<Terms />} />
           <Route path="/admin" element={<Admin />} />
