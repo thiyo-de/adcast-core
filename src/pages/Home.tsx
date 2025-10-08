@@ -6,6 +6,7 @@ import { AdUnit } from "@/components/AdUnit";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { FeaturedCarousel } from "@/components/FeaturedCarousel";
 import { supabase } from "@/integrations/supabase/client";
 
 export default function Home() {
@@ -66,19 +67,7 @@ export default function Home() {
         {/* Featured Section */}
         <section className="mb-8 sm:mb-10 lg:mb-12">
           <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gradient">Featured Videos</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-            {isLoading ? (
-              <>
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-                <VideoCardSkeleton />
-              </>
-            ) : (
-              featuredVideos.map((video) => (
-                <VideoCard key={video.id} {...video} />
-              ))
-            )}
-          </div>
+          <FeaturedCarousel videos={featuredVideos} isLoading={isLoading} />
         </section>
 
         {/* Categories Section */}
