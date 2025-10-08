@@ -66,7 +66,6 @@ export default function Home() {
 
         {/* Featured Section */}
         <section className="mb-8 sm:mb-10 lg:mb-12">
-          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gradient">Featured Videos</h2>
           <FeaturedCarousel videos={featuredVideos} isLoading={isLoading} />
         </section>
 

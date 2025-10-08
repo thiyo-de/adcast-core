@@ -1,8 +1,10 @@
+import { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Play } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Carousel, CarouselContent, CarouselItem, CarouselPrevious, CarouselNext } from "@/components/ui/carousel";
 import { Skeleton } from "@/components/ui/skeleton";
+import Autoplay from "embla-carousel-autoplay";
 
 interface Video {
   id: string;
@@ -19,6 +21,10 @@ interface FeaturedCarouselProps {
 }
 
 export function FeaturedCarousel({ videos, isLoading }: FeaturedCarouselProps) {
+  const plugin = useRef(
+    Autoplay({ delay: 5000, stopOnInteraction: true, stopOnMouseEnter: true })
+  );
+
   if (isLoading) {
     return (
       <div className="w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] rounded-lg overflow-hidden">
@@ -37,6 +43,7 @@ export function FeaturedCarousel({ videos, isLoading }: FeaturedCarouselProps) {
         loop: true,
         align: "start",
       }}
+      plugins={[plugin.current]}
       className="w-full"
     >
       <CarouselContent>

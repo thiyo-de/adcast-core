@@ -128,9 +128,15 @@ export default function VideoPage() {
           <AdUnit size="728x90" />
         </div>
 
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 lg:gap-8">
+        {/* Sidebar Ads Above Video - Only on xl+ screens */}
+        <div className="hidden xl:flex justify-center gap-4 mb-6">
+          <AdUnit size="300x250" />
+          <AdUnit size="300x600" className="hidden 2xl:block" />
+        </div>
+
+        <div className="max-w-5xl mx-auto">
           {/* Main Content */}
-          <div className="xl:col-span-2">
+          <div>
             {/* Video Player */}
             <div className="aspect-video w-full bg-black rounded-lg overflow-hidden mb-3 sm:mb-4">
               <div dangerouslySetInnerHTML={{ __html: video.embed_code }} className="w-full h-full" />
@@ -206,12 +212,6 @@ export default function VideoPage() {
                 </div>
               </div>
             )}
-          </div>
-
-          {/* Sidebar - Hidden on mobile and tablet, shown on xl+ */}
-          <div className="hidden xl:flex flex-col gap-6">
-            <AdUnit size="300x250" />
-            <AdUnit size="300x600" className="hidden 2xl:block" />
           </div>
         </div>
       </div>
