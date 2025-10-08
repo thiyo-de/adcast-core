@@ -418,10 +418,10 @@ export default function Admin() {
       <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
           <TabsList className="w-full sm:w-auto">
-            <TabsTrigger value="videos" className="flex-1 sm:flex-initial text-xs sm:text-sm">Videos</TabsTrigger>
-            <TabsTrigger value="add" className="flex-1 sm:flex-initial text-xs sm:text-sm">Add/Edit</TabsTrigger>
-            <TabsTrigger value="categories" className="flex-1 sm:flex-initial text-xs sm:text-sm">Categories</TabsTrigger>
-            <TabsTrigger value="analytics" className="flex-1 sm:flex-initial text-xs sm:text-sm">Analytics</TabsTrigger>
+            <TabsTrigger value="videos" className="flex-1 sm:flex-initial text-xs sm:text-sm min-h-[44px]">Videos</TabsTrigger>
+            <TabsTrigger value="add" className="flex-1 sm:flex-initial text-xs sm:text-sm min-h-[44px]">Add/Edit</TabsTrigger>
+            <TabsTrigger value="categories" className="flex-1 sm:flex-initial text-xs sm:text-sm min-h-[44px]">Categories</TabsTrigger>
+            <TabsTrigger value="analytics" className="flex-1 sm:flex-initial text-xs sm:text-sm min-h-[44px]">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="videos">
@@ -436,10 +436,10 @@ export default function Admin() {
                     placeholder="Search videos..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="flex-1"
+                    className="flex-1 min-h-[44px]"
                   />
                   <Select value={searchField} onValueChange={(value: any) => setSearchField(value)}>
-                    <SelectTrigger className="w-full sm:w-[200px]">
+                    <SelectTrigger className="w-full sm:w-[200px] min-h-[44px]">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -466,6 +466,7 @@ export default function Admin() {
                     variant={visibilityFilter === 'all' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setVisibilityFilter('all')}
+                    className="min-h-[44px]"
                   >
                     All
                   </Button>
@@ -473,6 +474,7 @@ export default function Admin() {
                     variant={visibilityFilter === 'public' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setVisibilityFilter('public')}
+                    className="min-h-[44px]"
                   >
                     Public
                   </Button>
@@ -480,6 +482,7 @@ export default function Admin() {
                     variant={visibilityFilter === 'unlisted' ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setVisibilityFilter('unlisted')}
+                    className="min-h-[44px]"
                   >
                     Unlisted
                   </Button>
@@ -491,7 +494,77 @@ export default function Admin() {
                 </p>
               </div>
               
-              <div className="overflow-x-auto -mx-3 sm:-mx-4 lg:-mx-6">
+              {/* Mobile Card View */}
+              <div className="block md:hidden space-y-3">
+                {paginatedVideos.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground">
+                      {searchQuery ? `No videos found matching "${searchQuery}"` : "No videos found"}
+                    </p>
+                    {searchQuery && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setSearchQuery("")}
+                        className="mt-4 min-h-[44px]"
+                      >
+                        Clear search
+                      </Button>
+                    )}
+                  </div>
+                ) : (
+                  paginatedVideos.map((video) => (
+                    <Card key={video.id} className="p-4">
+                      <div className="space-y-3">
+                        <h3 className="font-semibold text-base">{video.title}</h3>
+                        
+                        <div className="flex flex-wrap gap-2 text-sm text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Eye className="h-4 w-4" />
+                            {video.views}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Heart className="h-4 w-4" />
+                            {video.likes}
+                          </span>
+                          <Badge variant={video.is_public ? "default" : "secondary"}>
+                            {video.is_public ? "Public" : "Unlisted"}
+                          </Badge>
+                        </div>
+                        
+                        <div className="text-sm">
+                          <span className="text-muted-foreground">Category: </span>
+                          <span className="font-medium">{video.category}</span>
+                        </div>
+                        
+                        <div className="flex gap-2 pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleEdit(video)}
+                            className="flex-1 min-h-[44px]"
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            Edit
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => handleDelete(video.id)}
+                            className="flex-1 min-h-[44px]"
+                          >
+                            <Trash2 className="h-4 w-4 mr-2" />
+                            Delete
+                          </Button>
+                        </div>
+                      </div>
+                    </Card>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto -mx-3 sm:-mx-4 lg:-mx-6">
                 <div className="inline-block min-w-full align-middle">
                   <div className="overflow-hidden">
                     <Table>
@@ -517,7 +590,7 @@ export default function Admin() {
                             variant="outline"
                             size="sm"
                             onClick={() => setSearchQuery("")}
-                            className="mt-4"
+                            className="mt-4 min-h-[44px]"
                           >
                             Clear search
                           </Button>
@@ -667,7 +740,7 @@ export default function Admin() {
                   </label>
                 </div>
                 <div className="flex gap-2">
-                  <Button type="submit">{editingVideo ? "Update Video" : "Add Video"}</Button>
+                  <Button type="submit" className="min-h-[44px]">{editingVideo ? "Update Video" : "Add Video"}</Button>
                   {editingVideo && (
                     <Button
                       type="button"
@@ -685,6 +758,7 @@ export default function Admin() {
                           is_public: true,
                         });
                       }}
+                      className="min-h-[44px]"
                     >
                       Cancel
                     </Button>
@@ -703,7 +777,7 @@ export default function Admin() {
                     <Button onClick={() => {
                       setEditingCategory(null);
                       setCategoryFormData({ name: "", slug: "", description: "" });
-                    }}>
+                    }} className="min-h-[44px]">
                       <Plus className="h-4 w-4 mr-2" />
                       Add Category
                     </Button>
@@ -736,48 +810,94 @@ export default function Admin() {
                           onChange={(e) => setCategoryFormData({ ...categoryFormData, description: e.target.value })}
                         />
                       </div>
-                      <Button type="submit">{editingCategory ? "Update" : "Create"}</Button>
+                      <Button type="submit" className="min-h-[44px]">{editingCategory ? "Update" : "Create"}</Button>
                     </form>
                   </DialogContent>
                 </Dialog>
               </div>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Slug</TableHead>
-                    <TableHead>Description</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {categories.map((category) => (
-                    <TableRow key={category.id}>
-                      <TableCell className="font-medium">{category.name}</TableCell>
-                      <TableCell>{category.slug}</TableCell>
-                      <TableCell>{category.description || "-"}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleCategoryEdit(category)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleCategoryDelete(category.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
+              {/* Mobile Card View */}
+              <div className="block md:hidden space-y-3">
+                {categories.map((category) => (
+                  <Card key={category.id} className="p-4">
+                    <div className="space-y-3">
+                      <div>
+                        <h3 className="font-semibold text-base">{category.name}</h3>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Slug: {category.slug}
+                        </p>
+                      </div>
+                      
+                      {category.description && (
+                        <p className="text-sm">{category.description}</p>
+                      )}
+                      
+                      <div className="flex gap-2 pt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleCategoryEdit(category)}
+                          className="flex-1 min-h-[44px]"
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          onClick={() => handleCategoryDelete(category.id)}
+                          className="flex-1 min-h-[44px]"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Slug</TableHead>
+                      <TableHead>Description</TableHead>
+                      <TableHead>Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <TableRow key={category.id}>
+                        <TableCell className="font-medium">{category.name}</TableCell>
+                        <TableCell>{category.slug}</TableCell>
+                        <TableCell>{category.description || "-"}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleCategoryEdit(category)}
+                              className="min-h-[44px]"
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleCategoryDelete(category.id)}
+                              className="min-h-[44px]"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             </Card>
           </TabsContent>
 
