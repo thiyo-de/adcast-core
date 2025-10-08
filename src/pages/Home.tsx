@@ -57,16 +57,16 @@ export default function Home() {
     <div className="min-h-screen">
       <Header />
 
-      <main className="container mx-auto px-4 py-8">
-        {/* Top Leaderboard Ad */}
-        <div className="flex justify-center mb-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        {/* Top Leaderboard Ad - Hidden on mobile */}
+        <div className="hidden sm:flex justify-center mb-6 lg:mb-8">
           <AdUnit size="728x90" />
         </div>
 
         {/* Featured Section */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-6 text-gradient">Featured Videos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section className="mb-8 sm:mb-10 lg:mb-12">
+          <h2 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gradient">Featured Videos</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {isLoading ? (
               <>
                 <VideoCardSkeleton />
@@ -83,12 +83,15 @@ export default function Home() {
 
         {/* Categories Section */}
         {categories.length > 0 && (
-          <section className="mb-12">
-            <h2 className="text-2xl font-bold mb-6">Browse by Category</h2>
-            <div className="flex flex-wrap gap-3">
+          <section className="mb-8 sm:mb-10 lg:mb-12">
+            <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Browse by Category</h2>
+            <div className="flex flex-wrap gap-2 sm:gap-3">
               {categories.map((category) => (
                 <Link key={category} to={`/category/${category}`}>
-                  <Button variant="outline" className="hover:bg-primary hover:text-primary-foreground transition-all">
+                  <Button 
+                    variant="outline" 
+                    className="hover:bg-primary hover:text-primary-foreground transition-all text-sm sm:text-base min-h-[44px]"
+                  >
                     {category}
                   </Button>
                 </Link>
@@ -99,8 +102,8 @@ export default function Home() {
 
         {/* Trending Section with Inline Ads */}
         <section>
-          <h2 className="text-2xl font-bold mb-6">Trending Now 🔥</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <h2 className="text-xl sm:text-2xl font-bold mb-4 sm:mb-6">Trending Now 🔥</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {isLoading ? (
               <>
                 <VideoCardSkeleton />
@@ -116,9 +119,9 @@ export default function Home() {
               trendingVideos.map((video, index) => (
                 <>
                   <VideoCard key={video.id} {...video} />
-                  {/* Inline Ad every 6 videos */}
+                  {/* Inline Ad every 6 videos - Hidden on mobile */}
                   {(index + 1) % 6 === 0 && index !== trendingVideos.length - 1 && (
-                    <div className="col-span-full flex justify-center my-4">
+                    <div className="hidden sm:flex col-span-full justify-center my-4">
                       <AdUnit size="728x90" />
                     </div>
                   )}
@@ -128,8 +131,8 @@ export default function Home() {
           </div>
         </section>
 
-        {/* Footer Leaderboard Ad */}
-        <div className="flex justify-center mt-12">
+        {/* Footer Leaderboard Ad - Hidden on mobile */}
+        <div className="hidden sm:flex justify-center mt-8 lg:mt-12">
           <AdUnit size="728x90" />
         </div>
       </main>

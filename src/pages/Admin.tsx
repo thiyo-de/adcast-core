@@ -238,93 +238,102 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background">
       <div className="border-b border-border">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-gradient">Admin Panel</h1>
-          <Button variant="outline" onClick={handleLogout}>Logout</Button>
+        <div className="container mx-auto px-3 sm:px-4 py-3 sm:py-4 flex items-center justify-between gap-2">
+          <h1 className="text-lg sm:text-xl lg:text-2xl font-bold text-gradient">Admin Panel</h1>
+          <Button variant="outline" onClick={handleLogout} className="min-h-[44px]">Logout</Button>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList>
-            <TabsTrigger value="videos">Videos</TabsTrigger>
-            <TabsTrigger value="add">Add/Edit Video</TabsTrigger>
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+      <div className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 sm:space-y-6">
+          <TabsList className="w-full sm:w-auto">
+            <TabsTrigger value="videos" className="flex-1 sm:flex-initial text-xs sm:text-sm">Videos</TabsTrigger>
+            <TabsTrigger value="add" className="flex-1 sm:flex-initial text-xs sm:text-sm">Add/Edit</TabsTrigger>
+            <TabsTrigger value="analytics" className="flex-1 sm:flex-initial text-xs sm:text-sm">Analytics</TabsTrigger>
           </TabsList>
 
           <TabsContent value="videos">
-            <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4">Manage Videos</h2>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Category</TableHead>
-                    <TableHead>Visibility</TableHead>
-                    <TableHead>Views</TableHead>
-                    <TableHead>Likes</TableHead>
-                    <TableHead>Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {videos.map((video) => (
-                    <TableRow key={video.id}>
-                      <TableCell className="font-medium">{video.title}</TableCell>
-                      <TableCell>{video.category}</TableCell>
-                      <TableCell>
-                        <Badge variant={video.is_public ? "default" : "secondary"}>
-                          {video.is_public ? "Public" : "Unlisted"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center gap-1">
-                          <Eye className="h-4 w-4" />
-                          {video.views}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <span className="flex items-center gap-1">
-                          <Heart className="h-4 w-4" />
-                          {video.likes}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleEdit(video)}
-                          >
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="destructive"
-                            onClick={() => handleDelete(video.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <Card className="p-3 sm:p-4 lg:p-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Manage Videos</h2>
+              <div className="overflow-x-auto -mx-3 sm:-mx-4 lg:-mx-6">
+                <div className="inline-block min-w-full align-middle">
+                  <div className="overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="min-w-[200px]">Title</TableHead>
+                          <TableHead className="min-w-[100px]">Category</TableHead>
+                          <TableHead className="min-w-[100px]">Visibility</TableHead>
+                          <TableHead className="min-w-[80px]">Views</TableHead>
+                          <TableHead className="min-w-[80px]">Likes</TableHead>
+                          <TableHead className="min-w-[120px]">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {videos.map((video) => (
+                          <TableRow key={video.id}>
+                            <TableCell className="font-medium">{video.title}</TableCell>
+                            <TableCell>{video.category}</TableCell>
+                            <TableCell>
+                              <Badge variant={video.is_public ? "default" : "secondary"}>
+                                {video.is_public ? "Public" : "Unlisted"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <span className="flex items-center gap-1">
+                                <Eye className="h-4 w-4" />
+                                {video.views}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <span className="flex items-center gap-1">
+                                <Heart className="h-4 w-4" />
+                                {video.likes}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleEdit(video)}
+                                  className="min-h-[44px]"
+                                >
+                                  <Edit className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="destructive"
+                                  onClick={() => handleDelete(video.id)}
+                                  className="min-h-[44px]"
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                </div>
+              </div>
             </Card>
           </TabsContent>
 
           <TabsContent value="add">
-            <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4">
+            <Card className="p-3 sm:p-4 lg:p-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">
                 {editingVideo ? "Edit Video" : "Add New Video"}
               </h2>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                 <div>
                   <label className="block text-sm font-medium mb-2">Title *</label>
                   <Input
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     required
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -335,6 +344,7 @@ export default function Admin() {
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                     placeholder="my-video-title"
                     required
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -344,6 +354,7 @@ export default function Admin() {
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows={3}
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -355,6 +366,7 @@ export default function Admin() {
                     rows={4}
                     placeholder='<iframe src="..." ...></iframe>'
                     required
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -365,6 +377,7 @@ export default function Admin() {
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                     placeholder="Entertainment, Music, Sports, etc."
                     required
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -374,6 +387,7 @@ export default function Admin() {
                     value={formData.tags}
                     onChange={(e) => setFormData({ ...formData, tags: e.target.value })}
                     placeholder="funny, viral, trending"
+                    className="min-h-[44px]"
                   />
                 </div>
 
@@ -383,13 +397,14 @@ export default function Admin() {
                     value={formData.thumbnail_url}
                     onChange={(e) => setFormData({ ...formData, thumbnail_url: e.target.value })}
                     placeholder="https://..."
+                    className="min-h-[44px]"
                   />
                 </div>
 
-                <div className="flex items-center justify-between p-4 border rounded-lg">
+                <div className="flex items-center justify-between p-3 sm:p-4 border rounded-lg">
                   <div className="space-y-0.5">
                     <label className="text-sm font-medium">Video Visibility</label>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       {formData.is_public 
                         ? "Video is visible on all public pages" 
                         : "Video is unlisted but accessible via direct link"}
@@ -401,14 +416,15 @@ export default function Admin() {
                   />
                 </div>
 
-                <div className="flex gap-2">
-                  <Button type="submit">
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button type="submit" className="min-h-[44px]">
                     {editingVideo ? "Update Video" : "Create Video"}
                   </Button>
                   {editingVideo && (
                     <Button
                       type="button"
                       variant="outline"
+                      className="min-h-[44px]"
                       onClick={() => {
                         setEditingVideo(null);
                         setFormData({
@@ -432,22 +448,22 @@ export default function Admin() {
           </TabsContent>
 
           <TabsContent value="analytics">
-            <Card className="p-6">
-              <h2 className="text-xl font-bold mb-4">Analytics Overview</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="p-6 bg-secondary rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Total Videos</p>
-                  <p className="text-3xl font-bold text-primary">{videos.length}</p>
+            <Card className="p-3 sm:p-4 lg:p-6">
+              <h2 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Analytics Overview</h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+                <div className="p-4 sm:p-6 bg-secondary rounded-lg">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Videos</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">{videos.length}</p>
                 </div>
-                <div className="p-6 bg-secondary rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Total Views</p>
-                  <p className="text-3xl font-bold text-primary">
+                <div className="p-4 sm:p-6 bg-secondary rounded-lg">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Views</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">
                     {videos.reduce((acc, v) => acc + v.views, 0).toLocaleString()}
                   </p>
                 </div>
-                <div className="p-6 bg-secondary rounded-lg">
-                  <p className="text-sm text-muted-foreground mb-1">Total Likes</p>
-                  <p className="text-3xl font-bold text-primary">
+                <div className="p-4 sm:p-6 bg-secondary rounded-lg sm:col-span-2 lg:col-span-1">
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-1">Total Likes</p>
+                  <p className="text-2xl sm:text-3xl font-bold text-primary">
                     {videos.reduce((acc, v) => acc + v.likes, 0).toLocaleString()}
                   </p>
                 </div>

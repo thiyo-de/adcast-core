@@ -34,13 +34,13 @@ export default function CategoryPage() {
     <div className="min-h-screen">
       <Header />
       
-      <main className="container mx-auto px-4 py-8">
-        {/* Header Leaderboard Ad */}
-        <div className="flex justify-center mb-8">
+      <main className="container mx-auto px-3 sm:px-4 py-4 sm:py-6 lg:py-8">
+        {/* Header Leaderboard Ad - Hidden on mobile */}
+        <div className="hidden sm:flex justify-center mb-6 lg:mb-8">
           <AdUnit size="728x90" />
         </div>
 
-        <h1 className="text-4xl font-bold mb-8">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-6 sm:mb-8">
           <span className="text-gradient">{category}</span> Videos
         </h1>
 
@@ -49,19 +49,19 @@ export default function CategoryPage() {
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
           </div>
         ) : videos.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
             {videos.map((video) => (
               <VideoCard key={video.id} {...video} />
             ))}
           </div>
         ) : (
           <div className="text-center py-12">
-            <p className="text-xl text-muted-foreground">No videos found in this category</p>
+            <p className="text-lg sm:text-xl text-muted-foreground">No videos found in this category</p>
           </div>
         )}
 
-        {/* Footer Leaderboard Ad */}
-        <div className="flex justify-center mt-12">
+        {/* Footer Leaderboard Ad - Hidden on mobile */}
+        <div className="hidden sm:flex justify-center mt-8 lg:mt-12">
           <AdUnit size="728x90" />
         </div>
       </main>

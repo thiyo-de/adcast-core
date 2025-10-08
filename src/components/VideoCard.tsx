@@ -24,8 +24,8 @@ export const VideoCard = ({
   tags 
 }: VideoCardProps) => {
   return (
-    <Link to={`/video/${slug}`}>
-      <Card className="overflow-hidden hover-lift border-border bg-card group">
+    <Link to={`/video/${slug}`} className="block min-h-[44px]">
+      <Card className="overflow-hidden hover-lift border-border bg-card group h-full">
         <div className="aspect-video relative overflow-hidden bg-secondary">
           {thumbnail_url ? (
             <img 
@@ -35,24 +35,24 @@ export const VideoCard = ({
             />
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-secondary to-muted">
-              <span className="text-4xl">🎬</span>
+              <span className="text-3xl sm:text-4xl">🎬</span>
             </div>
           )}
-          <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground">
+          <Badge className="absolute top-2 right-2 bg-primary text-primary-foreground text-xs">
             {category}
           </Badge>
         </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+        <div className="p-3 sm:p-4">
+          <h3 className="font-semibold text-base sm:text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
             {title}
           </h3>
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
             <span className="flex items-center gap-1">
-              <Eye className="h-4 w-4" />
+              <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               {views.toLocaleString()}
             </span>
             <span className="flex items-center gap-1">
-              <Heart className="h-4 w-4" />
+              <Heart className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
               {likes}
             </span>
           </div>

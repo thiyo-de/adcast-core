@@ -114,3 +114,13 @@ All colors MUST be HSL.
     @apply bg-card/50 backdrop-blur-sm;
   }
 }
+
+/* Custom responsive breakpoint for very small phones */
+@media (min-width: 475px) {
+  .xs\:inline {
+    display: inline;
+  }
+  .xs\:hidden {
+    display: none;
+  }
+}
