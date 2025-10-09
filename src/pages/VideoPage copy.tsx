@@ -142,50 +142,13 @@ export default function VideoPage() {
               <div dangerouslySetInnerHTML={{ __html: video.embed_code }} className="w-full h-full" />
             </div>
 
-         {/* 🎬 Video Links (New Section) */}
-{video.links && video.links.length > 0 && (
-  <div className="mb-3 sm:mb-4">
-    <p className="text-sm font-medium text-muted-foreground mb-2">
-      Watch full video on partner sites:
-    </p>
-    <div className="flex flex-wrap gap-2">
-      {video.links.map((link: string, i: number) => (
-        <a
-          key={i}
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center bg-primary/10 hover:bg-primary/20 text-primary hover:text-primary/90 px-3 py-2 rounded-md text-sm font-medium transition-all duration-200 border border-primary/20 hover:border-primary/30 hover:shadow-sm"
-        >
-          <span>View Full Video {i + 1}</span>
-          <svg 
-            className="ml-1.5 h-3.5 w-3.5" 
-            fill="none" 
-            stroke="currentColor" 
-            viewBox="0 0 24 24"
-          >
-            <path 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-              strokeWidth={2} 
-              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" 
-            />
-          </svg>
-        </a>
-      ))}
-    </div>
-  </div>
-)}
-
             {/* VPN Hint */}
-<Alert className="mb-3 sm:mb-4 border-primary/50 text-sm">
-<div className="h-full w-full flex gap-2 items-center">
-  <AlertCircle className="h-4 w-4 " />
-  <AlertDescription>
-    <span className="font-medium">Note:</span> If video playback fails, try using a VPN as some partner sites have regional restrictions.
-  </AlertDescription>
-  </div>
-</Alert>
+            <Alert className="mb-3 sm:mb-4 border-primary/50 text-sm">
+              <AlertCircle className="h-4 w-4" />
+              <AlertDescription>
+                If the video does not play, try using a VPN (some partner sites may be blocked in certain regions)
+              </AlertDescription>
+            </Alert>
 
             {/* Video Info */}
             <div className="mb-4 sm:mb-6">

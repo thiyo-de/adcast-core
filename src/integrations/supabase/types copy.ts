@@ -56,7 +56,6 @@ export type Database = {
           title: string
           updated_at: string | null
           views: number | null
-          links: string[] | null;
         }
         Insert: {
           category: string

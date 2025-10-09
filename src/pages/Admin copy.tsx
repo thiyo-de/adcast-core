@@ -72,7 +72,6 @@ export default function Admin() {
     tags: "",
     thumbnail_url: "",
     is_public: true,
-    links: "", // 🆕 added for multiple video links
   });
 
   useEffect(() => {
@@ -312,16 +311,7 @@ export default function Admin() {
 
     const videoData = {
       ...formData,
-      tags: formData.tags
-        .split(",")
-        .map((t) => t.trim())
-        .filter(Boolean),
-      links: formData.links
-        ? formData.links
-            .split(",")
-            .map((l) => l.trim())
-            .filter(Boolean)
-        : [],
+      tags: formData.tags.split(",").map((t) => t.trim()),
     };
 
     if (editingVideo) {
@@ -364,9 +354,7 @@ export default function Admin() {
       tags: "",
       thumbnail_url: "",
       is_public: true,
-      links: "", // 🆕 added here
     });
-
     setEditingVideo(null);
     fetchVideos();
     setActiveTab("videos");
@@ -383,9 +371,7 @@ export default function Admin() {
       tags: video.tags.join(", "),
       thumbnail_url: video.thumbnail_url || "",
       is_public: video.is_public ?? true,
-      links: video.links ? video.links.join(", ") : "", // 🆕
     });
-
     setActiveTab("add");
   };
 
@@ -467,7 +453,7 @@ export default function Admin() {
           onValueChange={setActiveTab}
           className="space-y-4 sm:space-y-6"
         >
-          <TabsList className="w-full h-[50px]">
+          <TabsList className="w-full sm:w-auto">
             <TabsTrigger
               value="videos"
               className="flex-1 sm:flex-initial text-xs sm:text-sm min-h-[44px]"
@@ -832,35 +818,13 @@ export default function Admin() {
                     Tags (comma-separated)
                   </label>
                   <Input
-                    value={formData.tags || ""}
+                    value={formData.tags}
                     onChange={(e) =>
                       setFormData({ ...formData, tags: e.target.value })
                     }
                     placeholder="tag1, tag2, tag3"
                   />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Separate multiple tags with commas. Example: tag1, tag2,
-                    tag3
-                  </p>
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">
-                    Video Links (comma-separated)
-                  </label>
-                  <Input
-                    value={formData.links || ""}
-                    onChange={(e) =>
-                      setFormData({ ...formData, links: e.target.value })
-                    }
-                    placeholder="https://example1.com, https://example2.com"
-                  />
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Separate multiple links with commas. Example:
-                    https://link1.com, https://link2.com
-                  </p>
-                </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-2">
                     Thumbnail URL
@@ -919,7 +883,6 @@ export default function Admin() {
                           tags: "",
                           thumbnail_url: "",
                           is_public: true,
-                          links: "",
                         });
                       }}
                       className="min-h-[44px]"
