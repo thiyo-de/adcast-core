@@ -33,6 +33,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { PaginationControls } from "@/components/PaginationControls";
+const ADMIN_USER = import.meta.env.VITE_ADMIN_USERNAME as string;
+const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASSWORD as string;
 
 export default function Admin() {
   const navigate = useNavigate();
@@ -94,7 +96,7 @@ export default function Admin() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (username === "thiyo" && password === "thiyo123") {
+    if (username === ADMIN_USER && password === ADMIN_PASS) {
       // Sign up the admin user if they don't exist
       const { data: signUpData, error: signUpError } =
         await supabase.auth.signUp({
@@ -421,7 +423,7 @@ export default function Admin() {
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="thiyo"
+                placeholder="Enter Username"
                 required
               />
             </div>
